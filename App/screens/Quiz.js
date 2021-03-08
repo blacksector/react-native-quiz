@@ -4,6 +4,9 @@ import { View, StyleSheet, StatusBar, Text, SafeAreaView } from "react-native";
 import { Button, ButtonContainer } from "../components/Button";
 import { Alert } from "../components/Alert";
 
+import { decode } from 'html-entities';
+
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#36B1F0",
@@ -24,14 +27,47 @@ const styles = StyleSheet.create({
   }
 });
 
+
 class Quiz extends React.Component {
   state = {
     correctCount: 0,
     totalCount: this.props.navigation.getParam("questions", []).length,
     activeQuestionIndex: 0,
     answered: false,
-    answerCorrect: false
+    answerCorrect: false,
+    questions: []
   };
+
+
+
+  componentDidMount() {
+    return fetch('https://opentdb.com/api.php?amount=10&category=' + this.props.navigation.getParam("questions", ""))
+      .then((response) => response.json())
+      .then((json) => {
+
+        for (let i = 0; i < json.results.length; i++) {
+          let answers = [];
+          answers.push({ id: "1", text: decode(json.results[i].incorrect_answers[0]) })
+          if (json.results[i].incorrect_answers.length > 1) {
+            answers.push({ id: "2", text: decode(json.results[i].incorrect_answers[1]) })
+            answers.push({ id: "3", text: decode(json.results[i].incorrect_answers[2]) })
+            answers.push({ id: "4", text: decode(json.results[i].correct_answer), correct: true })
+          } else {
+            answers.push({ id: "2", text: decode(json.results[i].correct_answer), correct: true })
+          }
+
+          // Biased algorithm, doesn't do the best job in randomizing 
+          // but it's good enough for this scenario
+          json.results[i]["answers"] = answers.sort(() => .5 - Math.random());;
+        }
+        this.setState({ questions: json.results, totalCount: json.results.length })
+        return json.results;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
 
   answer = correct => {
     this.setState(
@@ -69,8 +105,8 @@ class Quiz extends React.Component {
   };
 
   render() {
-    const questions = this.props.navigation.getParam("questions", []);
-    const question = questions[this.state.activeQuestionIndex];
+    const questionsId = this.props.navigation.getParam("questions", 0);
+    const question = this.state.questions[this.state.activeQuestionIndex];
 
     return (
       <View
@@ -82,10 +118,10 @@ class Quiz extends React.Component {
         <StatusBar barStyle="light-content" />
         <SafeAreaView style={styles.safearea}>
           <View>
-            <Text style={styles.text}>{question.question}</Text>
+            <Text style={styles.text}>{decode(question?.question)}</Text>
 
             <ButtonContainer>
-              {question.answers.map(answer => (
+              {question?.answers?.map(answer => (
                 <Button
                   key={answer.id}
                   text={answer.text}
@@ -105,6 +141,8 @@ class Quiz extends React.Component {
         />
       </View>
     );
+
+
   }
 }
 

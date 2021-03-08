@@ -1,19 +1,24 @@
-## React Native Quiz App
+# React Native Quiz App
 
-A simple cross platform (iOS and Android) React Native quiz app. This example was put together for [React Native by Example](https://www.reactnativebyexample.com/). Get started learning & mastering React Native for free!
+A simple cross platform (iOS and Android) React Native quiz app. This project is based off of the code at: [React Native Quiz](https://github.com/ReactNativeSchool/react-native-quiz). 
 
-![Index Screen](./assets/index.png)
-![Quiz Screen](./assets/quiz.png)
+The backend uses the https://opentdb.com/ API. 
 
-### Installation
+Installation and setup is super simple:
 
-- `git clone https://github.com/ReactNativeSchool/react-native-quiz`
-- `yarn install`/`npm install`
+## Installation:
+```sh
 
-### Running
+$ git clone https://github.com/blacksector/react-native-quiz
+$ cd react-native-quiz
+$ npm i / yarn install
+```
 
-- `yarn run ios`/`npm run ios` or `yarn run android`/`npm run android`
+## Running:
+Pick anyone of the following commands:
 
----
-
-This project was put together to serve as an example to help you in building your own React Native apps. Feel free to download it and tinker with it!
+```sh
+$ npm run ios
+$ npm run android
+$ npm run start
+```
